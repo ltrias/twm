@@ -1,7 +1,7 @@
 package br.com.lptrias.twm.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -12,48 +12,97 @@ import java.util.Set;
  */
 public class RoadMesh {
 	private final String name;
-	private final Set<MeshEntry> entries;
+	private final Map<EntryKey, Integer> entries;
 	
 	public RoadMesh(String name){
 		this.name = name;
-		this.entries = new HashSet<>();
+		this.entries = new HashMap<>();
 	}
 	
-	public void addEntry(MeshEntry entry){
-		MeshEntry toAdd = entry;
-		
-		if( entries.contains(entry) )
-		{
-			MeshEntry current = getEntry(entry.getOrigin(), entry.getDestination());
+	public void addEntry(String origin, String destination, int cost){
+		if( valid(origin, destination) && valid(cost) ){
+			EntryKey key = new EntryKey(origin, destination);
+			Integer currentCost = entries.get(key);
 			
-			if( entry.getCost() < current.getCost() ){
-				entries.remove(current);
-			} else {
-				return;
+			if( currentCost  == null || currentCost > cost ){
+				entries.put(key, cost);
 			}
 		}
-		
-		entries.add(toAdd);
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
-	MeshEntry getEntry(String origin, String destination){
-		MeshEntry result = null;
-		
-		for (MeshEntry e : entries) {
-			if( e.getOrigin().equals(origin) && e.getDestination().equals(destination) ){
-				result = e;
-				break;
-			}
-		}
-		
-		return result;
+	public int getCost(String origin, String destination){
+		return entries.get(new EntryKey(origin, destination));
 	}
 	
-	int getSize(){
+	public int getSize(){
 		return entries.size();
+	}
+	
+	private boolean valid(String origin, String destination) {
+		if( origin == null || origin.equals(destination) ){
+			throw new IllegalArgumentException("Origin and destination are the same: " + origin);
+		}
+		
+		return true;
+	}
+
+	private boolean valid(int cost) {
+		if( cost < 0 ){
+			throw new IllegalArgumentException("Cost must not be negative: " + cost);
+		}
+		
+		return true;
+	}
+	
+	private static final class EntryKey {
+		final String origin, destination;
+
+		public EntryKey(String origin, String destination) {
+			this.origin = origin;
+			this.destination = destination;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((destination == null) ? 0 : destination.hashCode());
+			result = prime * result
+					+ ((origin == null) ? 0 : origin.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			EntryKey other = (EntryKey) obj;
+			if (destination == null) {
+				if (other.destination != null)
+					return false;
+			} else if (!destination.equals(other.destination))
+				return false;
+			if (origin == null) {
+				if (other.origin != null)
+					return false;
+			} else if (!origin.equals(other.origin))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "EntryKey [origin=" + origin + ", destination="
+					+ destination + "]";
+		}
 	}
 }

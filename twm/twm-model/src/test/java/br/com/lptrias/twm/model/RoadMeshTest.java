@@ -1,70 +1,67 @@
 package br.com.lptrias.twm.model;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import static org.junit.Assert.*;
-import br.com.lptrias.twm.model.RoadMesh;
-import br.com.lptrias.twm.model.MeshEntry;
+
+import org.junit.Before;
+import org.junit.Test;
 
 
 public class RoadMeshTest {
 	
 	private RoadMesh mesh;
-	private static MeshEntry E;
-	private static MeshEntry SAME_COST_THAN_E;
-	private static MeshEntry CHEAPER_THAN_E;
-	private static MeshEntry MORE_EXPENSIVE_THAN_E;
 	
-	@BeforeClass
-	public static void setupClass(){
-		E = new MeshEntry("A", "B", 10);
-		SAME_COST_THAN_E = new MeshEntry("A", "B", 10);
-		CHEAPER_THAN_E = new MeshEntry("A", "B", 5);
-		MORE_EXPENSIVE_THAN_E = new MeshEntry("A", "B", 15);
-	}
+	private static final String LOCATION_A = "A";
+	private static final String LOCATION_B = "B";
+	private static final int CHEAP_COST = 5;
+	private static final int DEFAULT_COST = 10;
+	private static final int EXPENSIVE_COST = 15;
+	private static final int NEGATIVE_COST = -DEFAULT_COST;
 	
 	@Before
 	public void setup(){
 		mesh = new RoadMesh("Test mesh");
 	}
-
+	
 	@Test
 	public void addEntryToEmptyMesh(){
-		mesh.addEntry(E);
+		mesh.addEntry(LOCATION_A, LOCATION_B, DEFAULT_COST);
 		
-		MeshEntry entry = mesh.getEntry(E.getOrigin(), E.getDestination());
-		assertSame(E, entry);
+		assertEquals(DEFAULT_COST, mesh.getCost(LOCATION_A, LOCATION_B));
 	}
 	
 	@Test
-	public void addSameCostEntryToMesh(){
-		mesh.addEntry(E);
-		mesh.addEntry(SAME_COST_THAN_E);
+	public void addSameEntryToMesh(){
+		mesh.addEntry(LOCATION_A, LOCATION_B, DEFAULT_COST);
+		mesh.addEntry(LOCATION_A, LOCATION_B, DEFAULT_COST);
 		
-		MeshEntry entry = mesh.getEntry(E.getOrigin(), E.getDestination());
-		assertSame(E, entry);
+		assertEquals(DEFAULT_COST, mesh.getCost(LOCATION_A, LOCATION_B));
+		assertEquals(1, mesh.getSize());
 	}
 	
 	@Test
 	public void addCheaperEntryToMesh(){
-		mesh.addEntry(E);
-		mesh.addEntry(CHEAPER_THAN_E);
-		
-		MeshEntry entry = mesh.getEntry(E.getOrigin(), E.getDestination());
-		
-		assertSame(CHEAPER_THAN_E, entry);
+		mesh.addEntry(LOCATION_A, LOCATION_B, DEFAULT_COST);
+		mesh.addEntry(LOCATION_A, LOCATION_B, CHEAP_COST);
+
+		assertEquals(CHEAP_COST, mesh.getCost(LOCATION_A, LOCATION_B));
 		assertEquals(1, mesh.getSize());
 	}
 	
 	@Test
 	public void addMoreExpensiveEntryToMesh(){
-		mesh.addEntry(E);
-		mesh.addEntry(MORE_EXPENSIVE_THAN_E);
-		
-		MeshEntry entry = mesh.getEntry(E.getOrigin(), E.getDestination());
-		
-		assertSame(E, entry);
+		mesh.addEntry(LOCATION_A, LOCATION_B, DEFAULT_COST);
+		mesh.addEntry(LOCATION_A, LOCATION_B, EXPENSIVE_COST);
+
+		assertEquals(DEFAULT_COST, mesh.getCost(LOCATION_A, LOCATION_B));
 		assertEquals(1, mesh.getSize());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void addLoopingEntry(){
+		mesh.addEntry(LOCATION_A, LOCATION_A, DEFAULT_COST);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void addNegativeCostEntryToMesh(){
+		mesh.addEntry(LOCATION_A, LOCATION_A, NEGATIVE_COST);
 	}
 }
