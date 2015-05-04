@@ -8,9 +8,9 @@ package br.com.lptrias.twm.model;
  */
 
 public class MeshEntry {
-	private String origin;
-	private String destination;
-	private int cost;
+	private final String origin;
+	private final String destination;
+	private final int cost;
 	
 	public MeshEntry(String origin, String destination, int cost) {
 		this.origin = origin;
@@ -22,24 +22,12 @@ public class MeshEntry {
 		return origin;
 	}
 
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
-
 	public String getDestination() {
 		return destination;
 	}
 
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
-
 	public int getCost() {
 		return cost;
-	}
-
-	public void setCost(int cost) {
-		this.cost = cost;
 	}
 
 	@Override
