@@ -11,8 +11,8 @@ import java.util.Set;
  * 
  */
 public class RoadMesh {
-	private String name;
-	private Set<MeshEntry> entries;
+	private final String name;
+	private final Set<MeshEntry> entries;
 	
 	public RoadMesh(String name){
 		this.name = name;
@@ -20,11 +20,37 @@ public class RoadMesh {
 	}
 	
 	public void addEntry(MeshEntry entry){
+		MeshEntry toAdd = entry;
 		
+		if( entries.contains(entry) )
+		{
+			MeshEntry current = getEntry(entry.getOrigin(), entry.getDestination());
+			
+			if( entry.getCost() < current.getCost() ){
+				entries.remove(current);
+			} else {
+				return;
+			}
+		}
+		
+		entries.add(toAdd);
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	MeshEntry getEntry(String origin, String destination){
-		return null;
+		MeshEntry result = null;
+		
+		for (MeshEntry e : entries) {
+			if( e.getOrigin().equals(origin) && e.getDestination().equals(destination) ){
+				result = e;
+				break;
+			}
+		}
+		
+		return result;
 	}
 	
 	int getSize(){

@@ -8,14 +8,32 @@ package br.com.lptrias.twm.model;
  */
 
 public class MeshEntry {
-	private final String origin;
-	private final String destination;
-	private final int cost;
+	private String origin;
+	private String destination;
+	private int cost;
 	
 	public MeshEntry(String origin, String destination, int cost) {
-		this.origin = origin;
-		this.destination = destination;
-		this.cost = cost;
+		if( valid(cost) && valid(origin, destination) ){
+			this.origin = origin;
+			this.destination = destination;
+			this.cost = cost;
+		}
+	}
+
+	private boolean valid(String origin, String destination) {
+		if( origin == null || origin.equals(destination) ){
+			throw new IllegalArgumentException("Origin and destination are the same: " + origin);
+		}
+		
+		return true;
+	}
+
+	private boolean valid(int cost) {
+		if( cost < 0 ){
+			throw new IllegalArgumentException("Cost must not be negative: " + cost);
+		}
+		
+		return true;
 	}
 
 	public String getOrigin() {
@@ -27,7 +45,7 @@ public class MeshEntry {
 	}
 
 	public int getCost() {
-		return cost;
+		return new Integer(cost).intValue();
 	}
 
 	@Override
