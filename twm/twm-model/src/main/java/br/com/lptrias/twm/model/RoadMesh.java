@@ -10,16 +10,24 @@ import java.util.Set;
  * @author ltrias
  * 
  */
-public class Mesh {
+public class RoadMesh {
 	private String name;
 	private Set<MeshEntry> entries;
 	
-	public Mesh(String name){
+	public RoadMesh(String name){
 		this.name = name;
 		this.entries = new HashSet<>();
 	}
 	
 	public void addEntry(MeshEntry entry){
 		
+	}
+	
+	MeshEntry getEntry(String origin, String destination){
+		return null;
+	}
+	
+	int getSize(){
+		return entries.size();
 	}
 }
