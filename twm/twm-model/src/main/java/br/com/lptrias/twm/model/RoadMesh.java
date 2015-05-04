@@ -58,6 +58,11 @@ public class RoadMesh {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return "RoadMesh [name=" + name + ", entries=" + entries + "]";
+	}
+
 	private static final class EntryKey {
 		final String origin, destination;
 
