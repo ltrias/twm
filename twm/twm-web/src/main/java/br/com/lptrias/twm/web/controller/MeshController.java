@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.lptrias.twm.model.RoadMesh;
-import br.com.lptrias.twm.model.service.RoadMeshService;
+import br.com.lptrias.twm.service.RoadMeshService;
 
 
 @RestController
