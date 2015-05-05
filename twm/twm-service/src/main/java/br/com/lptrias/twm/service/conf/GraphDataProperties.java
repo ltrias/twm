@@ -5,7 +5,7 @@ package br.com.lptrias.twm.service.conf;
  * 
  * @author ltrias
  *
- * Contains constants to reference properties of vertexes, edges e indices on graph 
+ * Contains constants to reference properties of vertices, edges e indices on graph 
  */
 public final class GraphDataProperties {
 	public static final String LOCATION_NAME = "location_name";
