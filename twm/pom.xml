@@ -8,6 +8,7 @@
 	<modules>
 		<module>twm-web</module>
 		<module>twm-model</module>
+		<module>twm-service</module>
 	</modules>
 
 	<properties>

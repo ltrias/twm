@@ -11,6 +11,8 @@
     http://www.springframework.org/schema/mvc
    	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
+ <import resource="applicationContext-service.xml"/>
+ 
  <context:component-scan base-package="br.com.lptrias.twm.web"/>
  <context:annotation-config/>
  <mvc:annotation-driven/>

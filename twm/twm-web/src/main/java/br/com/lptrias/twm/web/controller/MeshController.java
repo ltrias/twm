@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.lptrias.twm.model.RoadMesh;
+import br.com.lptrias.twm.model.service.RoadMeshService;
 
 
 @RestController
@@ -21,6 +23,9 @@ import br.com.lptrias.twm.model.RoadMesh;
 public class MeshController {
 	
 	private static final Logger LOGGER = LogManager.getLogger();
+	
+	@Autowired
+	private RoadMeshService roadMeshService;
 	
 	@RequestMapping(value="/", method=RequestMethod.POST, consumes="text/plain")
 	public void insert(@PathVariable String meshName, @RequestBody String meshData, HttpServletResponse response){
@@ -48,9 +53,11 @@ public class MeshController {
 			}
 		}
 		
-		
-		LOGGER.debug(mesh);
-		
+		if( RequestMethod.POST == method ){
+			roadMeshService.saveMesh(mesh);
+		} else if( RequestMethod.PUT == method ){
+			roadMeshService.updateMesh(mesh);
+		}
 	}
 
 	void addDataTo(RoadMesh mesh, String meshData) {
