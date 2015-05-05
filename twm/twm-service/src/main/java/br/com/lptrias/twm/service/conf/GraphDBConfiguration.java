@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.logging.log4j.LogManager;
@@ -34,8 +33,6 @@ public class GraphDBConfiguration {
 		} catch (IOException e) {
 			LOGGER.error("Can't load " + res);
 		}
-		
-		LOGGER.debug(prop);
 		
 		BaseConfiguration conf = new BaseConfiguration();
 		
