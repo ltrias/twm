@@ -1,7 +1,9 @@
 package br.com.lptrias.twm.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -42,6 +44,10 @@ public class RoadMesh {
 		return entries.size();
 	}
 	
+	public Set<EntryKey> getTransitions() {
+		return Collections.unmodifiableSet(entries.keySet());
+	}
+	
 	private boolean valid(String origin, String destination) {
 		if( origin == null || origin.equals(destination) ){
 			throw new IllegalArgumentException("Origin and destination are the same: " + origin);
@@ -63,12 +69,20 @@ public class RoadMesh {
 		return "RoadMesh [name=" + name + ", entries=" + entries + "]";
 	}
 
-	private static final class EntryKey {
+	public static final class EntryKey {
 		final String origin, destination;
 
 		public EntryKey(String origin, String destination) {
 			this.origin = origin;
 			this.destination = destination;
+		}
+		
+		public String getOrigin() {
+			return origin;
+		}
+
+		public String getDestination() {
+			return destination;
 		}
 
 		@Override

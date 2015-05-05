@@ -34,9 +34,9 @@ public class SchemaCreator implements InitializingBean{
 		TitanManagement m = tg.getManagementSystem();
 		
 		PropertyKey name = null;
-		if( !m.containsPropertyKey(NAME) ){
-			name = m.makePropertyKey(NAME).dataType(String.class).make();
-			TitanGraphIndex namei = m.buildIndex(NAME,Vertex.class).addKey(name).unique().buildCompositeIndex();
+		if( !m.containsPropertyKey(LOCATION_NAME) ){
+			name = m.makePropertyKey(LOCATION_NAME).dataType(String.class).make();
+			TitanGraphIndex namei = m.buildIndex(LOCATION_NAME,Vertex.class).addKey(name).unique().buildCompositeIndex();
 			m.setConsistency(namei, ConsistencyModifier.LOCK);
 		}
 		
@@ -44,9 +44,9 @@ public class SchemaCreator implements InitializingBean{
 //			m.makeVertexLabel(LOCATION).make();
 //		}
 		
-		if( !m.containsPropertyKey(DISTANCE)) {
-			PropertyKey distance = m.makePropertyKey(DISTANCE).dataType(Integer.class).make();
-			TitanGraphIndex distancei = m.buildIndex(DISTANCE, Edge.class).addKey(distance).buildMixedIndex("search");
+		if( !m.containsPropertyKey(TRANSITION_COST)) {
+			PropertyKey distance = m.makePropertyKey(TRANSITION_COST).dataType(Integer.class).make();
+			TitanGraphIndex distancei = m.buildIndex(TRANSITION_COST, Edge.class).addKey(distance).buildMixedIndex("search");
 		}
 		
 //		if( !m.containsEdgeLabel("acessa") ){
