@@ -67,6 +67,38 @@ public class DefaultRoadMeshServiceTest {
 		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
 		
 		io.verify(((TitanGraph)graph)).commit();
+		
+		verifyNoMoreInteractions(graph);
+	}
+	
+	@Test
+	public void saveNewWithExistingLocations(){
+		ArrayList<Vertex> vertices = new ArrayList<>();
+		vertices.add(new DummyVertex());
+		
+		when(graph.getVertices(eq(LOCATION_NAME), eq("B"))).thenReturn(vertices);
+		when(graph.addVertex(anyObject())).thenReturn(new DummyVertex());
+		
+		RoadMesh mesh = new RoadMesh("Test Mesh");
+		mesh.addEntry("A", "B", 10);
+		mesh.addEntry("B", "C", 14);
+		
+		service.saveMesh(mesh);
+		
+		InOrder io = inOrder(graph);
+		io.verify(graph).getEdges(eq(MESH_NAME), eq("Test Mesh"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
+		io.verify(graph).addVertex(any(Vertex.class));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
+		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("C"));
+		io.verify(graph).addVertex(any(Vertex.class));
+		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
+		
+		io.verify(((TitanGraph)graph)).commit();
+		
+		verifyNoMoreInteractions(graph);
 	}
 	
 	private static final class DummyEdge implements Edge {
