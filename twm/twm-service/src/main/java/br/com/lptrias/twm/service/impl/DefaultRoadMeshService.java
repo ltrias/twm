@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import br.com.lptrias.twm.model.RoadMesh;
 import br.com.lptrias.twm.model.RoadMesh.EntryKey;
 import br.com.lptrias.twm.service.RoadMeshService;
-import br.com.lptrias.twm.service.conf.GraphDataProperties;
 import br.com.lptrias.twm.service.exception.GraphModificationException;
 
 import com.thinkaurelius.titan.core.TitanGraph;
@@ -73,20 +72,28 @@ public class DefaultRoadMeshService implements RoadMeshService {
 		}
 		
 	}
+	
+	Edge findEdgeBetween(Vertex a, Vertex b){
+		return null;
+	}
 
 	private boolean validUpdate(RoadMesh mesh) {
 		if( mesh == null ){
 			return false;
 		}
 		
-		Iterable<Edge> edges = graph.getEdges(MESH_NAME, mesh.getName());
 		
-		
-		if( edges == null || !edges.iterator().hasNext() ){
+		if( !hasEdges(mesh.getName()) ){
 			throw new UnsupportedOperationException("Mesh " + mesh.getName() + " has not been saved yet, use save instead");
 		}
 		
 		return true;
+	}
+
+	boolean hasEdges(String name) {
+		Iterable<Edge> edges = graph.getEdges(LABEL, name);
+		
+		return edges != null && edges.iterator().hasNext();
 	}
 
 	private Vertex addVertexIfNecessary(String locationName) {
@@ -108,9 +115,7 @@ public class DefaultRoadMeshService implements RoadMeshService {
 			return false;
 		}
 		
-		Iterable<Edge> edges = graph.getEdges(GraphDataProperties.LABEL, mesh.getName());
-		
-		if( edges != null && edges.iterator().hasNext() ){
+		if( hasEdges(mesh.getName()) ){
 			throw new UnsupportedOperationException("Mesh " + mesh.getName() + " has already been saved, use update instead");
 		}
 		
