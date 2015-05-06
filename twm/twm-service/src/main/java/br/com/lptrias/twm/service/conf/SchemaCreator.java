@@ -14,7 +14,6 @@ import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.schema.ConsistencyModifier;
 import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
-import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 
@@ -40,20 +39,14 @@ public class SchemaCreator implements InitializingBean{
 			m.setConsistency(namei, ConsistencyModifier.LOCK);
 		}
 		
-//		if( !m.containsVertexLabel(LOCATION) ){
-//			m.makeVertexLabel(LOCATION).make();
-//		}
-		
-		if( !m.containsPropertyKey(TRANSITION_COST)) {
-			PropertyKey distance = m.makePropertyKey(TRANSITION_COST).dataType(Integer.class).make();
-			TitanGraphIndex distancei = m.buildIndex(TRANSITION_COST, Edge.class).addKey(distance).buildMixedIndex("search");
-		}
-		
-//		if( !m.containsEdgeLabel("acessa") ){
-//			m.makeEdgeLabel("acessa").directed().signature(m.getPropertyKey("d")).make();
+//		if( !m.containsPropertyKey(TRANSITION_COST)) {
+//			PropertyKey distance = m.makePropertyKey(TRANSITION_COST).dataType(Integer.class).make();
+//			TitanGraphIndex distancei = m.buildIndex(TRANSITION_COST, Edge.class).addKey(distance).buildMixedIndex("search");
 //		}
 		
 		m.commit();	
 	}
+	
+	
 	
 }

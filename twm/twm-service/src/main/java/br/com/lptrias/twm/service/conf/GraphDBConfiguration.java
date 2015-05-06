@@ -14,7 +14,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.thinkaurelius.titan.core.TitanFactory;
-import com.tinkerpop.blueprints.Graph;
+import com.thinkaurelius.titan.core.TitanGraph;
 
 @Configuration
 public class GraphDBConfiguration {
@@ -22,7 +22,7 @@ public class GraphDBConfiguration {
 	private static final Logger LOGGER = LogManager.getLogger();
 	
 	@Bean(name="graph", destroyMethod="shutdown")
-	public Graph configureGraph(){
+	public TitanGraph configureGraph(){
 		
 		Resource res = new ClassPathResource("titan-cassandra-es.properties");
 		

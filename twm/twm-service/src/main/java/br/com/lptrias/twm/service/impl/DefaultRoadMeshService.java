@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import br.com.lptrias.twm.model.RoadMesh;
 import br.com.lptrias.twm.model.RoadMesh.EntryKey;
 import br.com.lptrias.twm.service.RoadMeshService;
+import br.com.lptrias.twm.service.conf.GraphDataProperties;
+import br.com.lptrias.twm.service.exception.GraphModificationException;
 
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Edge;
@@ -32,18 +34,59 @@ public class DefaultRoadMeshService implements RoadMeshService {
 	}
 
 	@Override
-	public void saveMesh(RoadMesh mesh) {
+	public void saveMesh(RoadMesh mesh) throws GraphModificationException {
 		LOGGER.debug("saveMesh called with: " + mesh);
-		validSave(mesh);
-		
-		for (EntryKey t : mesh.getTransitions()) {
-			Vertex o = addVertexIfNecessary(t.getOrigin());
-			Vertex d = addVertexIfNecessary(t.getDestination());
+		try{
+			if( !validSave(mesh) ){
+				return;
+			}
 			
-			graph.addEdge(null, o, d, mesh.getName());
+			for (EntryKey t : mesh.getTransitions()) {
+				Vertex o = addVertexIfNecessary(t.getOrigin());
+				Vertex d = addVertexIfNecessary(t.getDestination());
+				
+				Edge edge = graph.addEdge(null, o, d, mesh.getName());
+				edge.setProperty(TRANSITION_COST, mesh.getCost(t.getOrigin(), t.getDestination()));
+			}
+			
+			graph.commit();
+		}catch(Exception e){
+			graph.rollback();
+			
+			throw new GraphModificationException(e);
 		}
 		
-		graph.commit();
+	}
+	
+	@Override
+	public void updateMesh(RoadMesh mesh) throws GraphModificationException {
+		LOGGER.debug("updateMesh called with: " + mesh);
+		try{
+			if( !validUpdate(mesh) ){
+				return;
+			}
+			
+		}catch(Exception e){
+			graph.rollback();
+			
+			throw new GraphModificationException(e);
+		}
+		
+	}
+
+	private boolean validUpdate(RoadMesh mesh) {
+		if( mesh == null ){
+			return false;
+		}
+		
+		Iterable<Edge> edges = graph.getEdges(MESH_NAME, mesh.getName());
+		
+		
+		if( edges == null || !edges.iterator().hasNext() ){
+			throw new UnsupportedOperationException("Mesh " + mesh.getName() + " has not been saved yet, use save instead");
+		}
+		
+		return true;
 	}
 
 	private Vertex addVertexIfNecessary(String locationName) {
@@ -60,21 +103,17 @@ public class DefaultRoadMeshService implements RoadMeshService {
 		return v;
 	}
 
-	private void validSave(RoadMesh mesh) {
+	private boolean validSave(RoadMesh mesh) {
 		if( mesh == null ){
-			return;
+			return false;
 		}
 		
-		Iterable<Edge> edges = graph.getEdges(MESH_NAME, mesh.getName());
+		Iterable<Edge> edges = graph.getEdges(GraphDataProperties.LABEL, mesh.getName());
 		
 		if( edges != null && edges.iterator().hasNext() ){
 			throw new UnsupportedOperationException("Mesh " + mesh.getName() + " has already been saved, use update instead");
 		}
+		
+		return true;
 	}
-
-	@Override
-	public void updateMesh(RoadMesh mesh) {
-		LOGGER.debug("updateMesh called with: " + mesh);
-	}
-
 }

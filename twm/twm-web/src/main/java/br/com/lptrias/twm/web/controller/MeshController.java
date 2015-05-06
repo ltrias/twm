@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.lptrias.twm.model.RoadMesh;
 import br.com.lptrias.twm.service.RoadMeshService;
+import br.com.lptrias.twm.service.exception.GraphModificationException;
 
 
 @RestController
@@ -53,10 +54,20 @@ public class MeshController {
 			}
 		}
 		
-		if( RequestMethod.POST == method ){
-			roadMeshService.saveMesh(mesh);
-		} else if( RequestMethod.PUT == method ){
-			roadMeshService.updateMesh(mesh);
+		
+		try{
+			if( RequestMethod.POST == method ){
+				roadMeshService.saveMesh(mesh);
+			} else if( RequestMethod.PUT == method ){
+				roadMeshService.updateMesh(mesh);
+			}
+		}catch(GraphModificationException e){
+			try {
+				response.getOutputStream().write(e.getMessage().getBytes());
+			} catch (IOException e1) {
+				LOGGER.warn("Error writing exception to client");
+			}
+			response.setStatus(400);
 		}
 	}
 
