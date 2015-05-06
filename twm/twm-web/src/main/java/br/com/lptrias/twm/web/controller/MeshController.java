@@ -20,7 +20,7 @@ import br.com.lptrias.twm.service.exception.GraphModificationException;
 
 
 @RestController
-@RequestMapping("/twm/{meshName}")
+@RequestMapping("/twm/mesh/{meshName}")
 public class MeshController {
 	
 	private static final Logger LOGGER = LogManager.getLogger();
