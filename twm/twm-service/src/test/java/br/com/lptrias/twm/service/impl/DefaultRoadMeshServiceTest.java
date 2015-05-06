@@ -129,9 +129,12 @@ public class DefaultRoadMeshServiceTest {
 		service.updateMesh(new RoadMesh(""));
 	}
 	
-	@Test @Ignore
+	@Test
 	public void updateFullySavedMesh() throws GraphModificationException{
-		DummyVertex aVertex = spy(new DummyVertex());
+		DefaultRoadMeshService spiedService = spy(service);
+		doReturn(true).when(spiedService).hasEdges(anyString());
+		
+		DummyVertex aVertex = new DummyVertex();
 		aVertex.setProperty(LOCATION_NAME, "A");
 		List<Vertex> aVertices = new ArrayList<>();
 		aVertices.add(aVertex);
@@ -144,46 +147,116 @@ public class DefaultRoadMeshServiceTest {
 		when(graph.getVertices(eq(LOCATION_NAME), eq("B"))).thenReturn(bVertices);
 		
 		DummyEdge abEdge = spy(new DummyEdge());
-		abEdge.setVertex(aVertex, Direction.IN);
-		abEdge.setVertex(bVertex, Direction.OUT);
-		
-		DummyVertex cVertex = new DummyVertex();
-		cVertex.setProperty(LOCATION_NAME, "C");
-		List<Vertex> cVertices = new ArrayList<>();
-		cVertices.add(cVertex);
-		when(graph.getVertices(eq(LOCATION_NAME), eq("C"))).thenReturn(cVertices);
-		
-		
+		doReturn(abEdge).when(spiedService).findEdgeBetween(aVertex, bVertex);
 		
 		RoadMesh mesh = new RoadMesh("Test Mesh");
-		mesh.addEntry("A", "B", 10);
-//		mesh.addEntry("B", "C", 14);
+		mesh.addEntry("A", "B", 7);
 		
-		service.updateMesh(mesh);
+		spiedService.updateMesh(mesh);
 		
-		InOrder io = inOrder(graph);
-		io.verify(graph).getEdges(eq(MESH_NAME), eq("Test Mesh"));
+		InOrder io = inOrder(graph, spiedService, abEdge);
+		io.verify(spiedService).updateMesh(eq(mesh));
+		io.verify(spiedService).hasEdges(eq("Test Mesh"));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
-		io.verify(aVertex).getEdges(Direction.OUT, eq("Test Mesh"));
-		
-		
-//		
-//		io.verify(graph).addVertex(any(Vertex.class));
-//		io.verify(graph).addVertex(any(Vertex.class));
-//		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
-//		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
-//		io.verify(graph).addVertex(any(Vertex.class));
-//		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("C"));
-//		io.verify(graph).addVertex(any(Vertex.class));
-//		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
+		io.verify(spiedService).findEdgeBetween(aVertex, bVertex);
+		io.verify(abEdge).setProperty(eq(TRANSITION_COST), eq(7));
 		
 		io.verify(((TitanGraph)graph)).commit();
 		
-		verifyNoMoreInteractions(graph);
+		verifyNoMoreInteractions(graph, spiedService, abEdge);
 	}
 	
-	private static final class DummyEdge implements Edge {
+	@Test
+	public void updateMeshWithNewEdge() throws GraphModificationException{
+		DefaultRoadMeshService spiedService = spy(service);
+		doReturn(true).when(spiedService).hasEdges(anyString());
+		
+		DummyVertex aVertex = new DummyVertex();
+		aVertex.setProperty(LOCATION_NAME, "A");
+		List<Vertex> aVertices = new ArrayList<>();
+		aVertices.add(aVertex);
+		when(graph.getVertices(eq(LOCATION_NAME), eq("A"))).thenReturn(aVertices);
+		
+		DummyVertex bVertex = new DummyVertex();
+		bVertex.setProperty(LOCATION_NAME, "B");
+		List<Vertex> bVertices = new ArrayList<>();
+		bVertices.add(bVertex);
+		when(graph.getVertices(eq(LOCATION_NAME), eq("B"))).thenReturn(bVertices);
+		
+		DummyEdge abEdge = spy(new DummyEdge());
+		when(graph.addEdge(eq(null), eq(aVertex), eq(bVertex), eq("Test Mesh"))).thenReturn(abEdge);
+		
+		RoadMesh mesh = new RoadMesh("Test Mesh");
+		mesh.addEntry("A", "B", 7);
+		
+		spiedService.updateMesh(mesh);
+		
+		InOrder io = inOrder(graph, spiedService, abEdge);
+		io.verify(spiedService).updateMesh(eq(mesh));
+		io.verify(spiedService).hasEdges(eq("Test Mesh"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
+		io.verify(spiedService).findEdgeBetween(aVertex, bVertex);
+		io.verify(graph).addEdge(eq(null), eq(aVertex), eq(bVertex), eq("Test Mesh"));
+		io.verify(abEdge).setProperty(eq(TRANSITION_COST), eq(7));
+		
+		io.verify(((TitanGraph)graph)).commit();
+		
+		verifyNoMoreInteractions(graph, spiedService, abEdge);
+	}
+	
+	@Test
+	public void updateMeshWithNewVertex() throws GraphModificationException{
+		DefaultRoadMeshService spiedService = spy(service);
+		doReturn(true).when(spiedService).hasEdges(anyString());
+		
+		DummyVertex aVertex = new DummyVertex();
+		aVertex.setProperty(LOCATION_NAME, "A");
+		List<Vertex> aVertices = new ArrayList<>();
+		aVertices.add(aVertex);
+		when(graph.getVertices(eq(LOCATION_NAME), eq("A"))).thenReturn(aVertices);
+		
+		DummyVertex bVertex = new DummyVertex();
+		bVertex.setProperty(LOCATION_NAME, "B");
+		List<Vertex> bVertices = new ArrayList<>();
+		bVertices.add(bVertex);
+		when(graph.getVertices(eq(LOCATION_NAME), eq("B"))).thenReturn(bVertices);
+		
+		when(spiedService.findEdgeBetween(eq(aVertex), eq(bVertex))).thenReturn(new DummyEdge());
+		
+		DummyVertex cVertex = new DummyVertex();
+		cVertex.setProperty(LOCATION_NAME, "C");
+		when(graph.addVertex(eq(null))).thenReturn(cVertex);
+		
+		DummyEdge bcEdge = spy(new DummyEdge());
+		when(graph.addEdge(eq(null), eq(bVertex), eq(cVertex), eq("Test Mesh"))).thenReturn(bcEdge);
+		
+		RoadMesh mesh = new RoadMesh("Test Mesh");
+		mesh.addEntry("A", "B", 7);
+		mesh.addEntry("B", "C", 2);
+		
+		spiedService.updateMesh(mesh);
+		
+		InOrder io = inOrder(graph, spiedService, bcEdge);
+		io.verify(spiedService).updateMesh(eq(mesh));
+		io.verify(spiedService).hasEdges(eq("Test Mesh"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
+		io.verify(spiedService).findEdgeBetween(aVertex, bVertex);
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
+		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("C"));
+		io.verify(graph).addVertex(eq(null));
+		io.verify(spiedService).findEdgeBetween(bVertex, cVertex);
+		io.verify(graph).addEdge(eq(null), eq(bVertex), eq(cVertex), eq("Test Mesh"));
+		io.verify(bcEdge).setProperty(eq(TRANSITION_COST), eq(2));
+		
+		io.verify(((TitanGraph)graph)).commit();
+		
+		verifyNoMoreInteractions(graph, spiedService, bcEdge);
+	}
+	
+	private static class DummyEdge implements Edge {
 		
 		private Map<String, Object> p = new HashMap<>();
 		private Vertex in, out;
@@ -315,3 +388,4 @@ public class DefaultRoadMeshServiceTest {
 
 	}
 }
+

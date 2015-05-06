@@ -2,6 +2,8 @@ package br.com.lptrias.twm.service.impl;
 
 import static br.com.lptrias.twm.service.conf.GraphDataProperties.*;
 
+import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,20 @@ public class DefaultRoadMeshService implements RoadMeshService {
 				return;
 			}
 			
+			for (EntryKey t : mesh.getTransitions()) {
+				Vertex o = addVertexIfNecessary(t.getOrigin());
+				Vertex d = addVertexIfNecessary(t.getDestination());
+				
+				Edge e = findEdgeBetween(o, d);
+				
+				if( e == null ){
+					e = graph.addEdge(null, o, d, mesh.getName());
+				}
+				
+				e.setProperty(TRANSITION_COST, mesh.getCost(t.getOrigin(), t.getDestination()));
+			}
+			
+			graph.commit();
 		}catch(Exception e){
 			graph.rollback();
 			
@@ -74,6 +90,7 @@ public class DefaultRoadMeshService implements RoadMeshService {
 	}
 	
 	Edge findEdgeBetween(Vertex a, Vertex b){
+		
 		return null;
 	}
 
