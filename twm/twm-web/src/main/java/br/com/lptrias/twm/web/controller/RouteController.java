@@ -20,8 +20,16 @@ public class RouteController {
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public Route findCheapestRoute(@RequestParam(value="o", required=true) String origin, 
 								   @RequestParam(value="d", required=true) String destination,
+								   @RequestParam(value="fe", required=true) float fuelEficiency,
+								   @RequestParam(value="fc", required=true) float fuelCost,
 								   @PathVariable String meshName){
 		
-		return routeService.findCheapestRoute(origin, destination, meshName);
+		Route r = routeService.findCheapestRoute(origin, destination, meshName);
+		
+		float finalCost = r.getCost() * fuelCost / fuelEficiency;
+				
+		r.setCost(finalCost);
+		
+		return r;
 	}
 }
