@@ -17,6 +17,7 @@ import br.com.lptrias.twm.service.exception.GraphModificationException;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.gremlin.java.GremlinPipeline;
 
 /**
  * 
@@ -71,7 +72,7 @@ public class DefaultRoadMeshService implements RoadMeshService {
 				Vertex o = addVertexIfNecessary(t.getOrigin());
 				Vertex d = addVertexIfNecessary(t.getDestination());
 				
-				Edge e = findEdgeBetween(o, d);
+				Edge e = findEdgeBetween(o, d, mesh.getName());
 				
 				if( e == null ){
 					e = graph.addEdge(null, o, d, mesh.getName());
@@ -89,9 +90,11 @@ public class DefaultRoadMeshService implements RoadMeshService {
 		
 	}
 	
-	Edge findEdgeBetween(Vertex a, Vertex b){
+	Edge findEdgeBetween(Vertex a, Vertex b, String meshName){
+		Iterable<Edge> edge = new GremlinPipeline(a).outE(meshName).as("edge").inV().back("edge");
 		
-		return null;
+		
+		return edge != null && edge.iterator().hasNext() ? edge.iterator().next() : null;
 	}
 
 	private boolean validUpdate(RoadMesh mesh) {

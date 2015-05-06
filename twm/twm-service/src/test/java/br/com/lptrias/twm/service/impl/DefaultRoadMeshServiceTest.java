@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -29,6 +28,8 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.VertexQuery;
 
 public class DefaultRoadMeshServiceTest {
+
+	private static final String TEST_MESH_NAME = "Test Mesh";
 
 	private DefaultRoadMeshService service;
 	
@@ -61,24 +62,24 @@ public class DefaultRoadMeshServiceTest {
 		when(graph.addVertex(anyObject())).thenReturn(new DummyVertex());
 		when(graph.addEdge(anyObject(), any(Vertex.class), any(Vertex.class), anyString())).thenReturn(new DummyEdge());
 		
-		RoadMesh mesh = new RoadMesh("Test Mesh");
+		RoadMesh mesh = new RoadMesh(TEST_MESH_NAME);
 		mesh.addEntry("A", "B", 10);
 		mesh.addEntry("B", "C", 14);
 		
 		service.saveMesh(mesh);
 		
 		InOrder io = inOrder(graph);
-		io.verify(graph).getEdges(eq(LABEL), eq("Test Mesh"));
+		io.verify(graph).getEdges(eq(LABEL), eq(TEST_MESH_NAME));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
 		io.verify(graph).addVertex(any(Vertex.class));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
 		io.verify(graph).addVertex(any(Vertex.class));
-		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
+		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq(TEST_MESH_NAME));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
 		io.verify(graph).addVertex(any(Vertex.class));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("C"));
 		io.verify(graph).addVertex(any(Vertex.class));
-		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
+		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq(TEST_MESH_NAME));
 		
 		io.verify(((TitanGraph)graph)).commit();
 		
@@ -94,22 +95,22 @@ public class DefaultRoadMeshServiceTest {
 		when(graph.addVertex(anyObject())).thenReturn(new DummyVertex());
 		when(graph.addEdge(anyObject(), any(Vertex.class), any(Vertex.class), anyString())).thenReturn(new DummyEdge());
 		
-		RoadMesh mesh = new RoadMesh("Test Mesh");
+		RoadMesh mesh = new RoadMesh(TEST_MESH_NAME);
 		mesh.addEntry("A", "B", 10);
 		mesh.addEntry("B", "C", 14);
 		
 		service.saveMesh(mesh);
 		
 		InOrder io = inOrder(graph);
-		io.verify(graph).getEdges(eq(LABEL), eq("Test Mesh"));
+		io.verify(graph).getEdges(eq(LABEL), eq(TEST_MESH_NAME));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
 		io.verify(graph).addVertex(any(Vertex.class));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
-		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
+		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq(TEST_MESH_NAME));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("C"));
 		io.verify(graph).addVertex(any(Vertex.class));
-		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq("Test Mesh"));
+		io.verify(graph).addEdge(eq(null), any(Vertex.class), any(Vertex.class), eq(TEST_MESH_NAME));
 		
 		io.verify(((TitanGraph)graph)).commit();
 		
@@ -147,19 +148,19 @@ public class DefaultRoadMeshServiceTest {
 		when(graph.getVertices(eq(LOCATION_NAME), eq("B"))).thenReturn(bVertices);
 		
 		DummyEdge abEdge = spy(new DummyEdge());
-		doReturn(abEdge).when(spiedService).findEdgeBetween(aVertex, bVertex);
+		doReturn(abEdge).when(spiedService).findEdgeBetween(aVertex, bVertex, TEST_MESH_NAME);
 		
-		RoadMesh mesh = new RoadMesh("Test Mesh");
+		RoadMesh mesh = new RoadMesh(TEST_MESH_NAME);
 		mesh.addEntry("A", "B", 7);
 		
 		spiedService.updateMesh(mesh);
 		
 		InOrder io = inOrder(graph, spiedService, abEdge);
 		io.verify(spiedService).updateMesh(eq(mesh));
-		io.verify(spiedService).hasEdges(eq("Test Mesh"));
+		io.verify(spiedService).hasEdges(eq(TEST_MESH_NAME));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
-		io.verify(spiedService).findEdgeBetween(aVertex, bVertex);
+		io.verify(spiedService).findEdgeBetween(aVertex, bVertex, TEST_MESH_NAME);
 		io.verify(abEdge).setProperty(eq(TRANSITION_COST), eq(7));
 		
 		io.verify(((TitanGraph)graph)).commit();
@@ -184,21 +185,23 @@ public class DefaultRoadMeshServiceTest {
 		bVertices.add(bVertex);
 		when(graph.getVertices(eq(LOCATION_NAME), eq("B"))).thenReturn(bVertices);
 		
-		DummyEdge abEdge = spy(new DummyEdge());
-		when(graph.addEdge(eq(null), eq(aVertex), eq(bVertex), eq("Test Mesh"))).thenReturn(abEdge);
+		doReturn(null).when(spiedService).findEdgeBetween(eq(aVertex), eq(bVertex), eq(TEST_MESH_NAME));
 		
-		RoadMesh mesh = new RoadMesh("Test Mesh");
+		DummyEdge abEdge = spy(new DummyEdge());
+		when(graph.addEdge(eq(null), eq(aVertex), eq(bVertex), eq(TEST_MESH_NAME))).thenReturn(abEdge);
+		
+		RoadMesh mesh = new RoadMesh(TEST_MESH_NAME);
 		mesh.addEntry("A", "B", 7);
 		
 		spiedService.updateMesh(mesh);
 		
 		InOrder io = inOrder(graph, spiedService, abEdge);
 		io.verify(spiedService).updateMesh(eq(mesh));
-		io.verify(spiedService).hasEdges(eq("Test Mesh"));
+		io.verify(spiedService).hasEdges(eq(TEST_MESH_NAME));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
-		io.verify(spiedService).findEdgeBetween(aVertex, bVertex);
-		io.verify(graph).addEdge(eq(null), eq(aVertex), eq(bVertex), eq("Test Mesh"));
+		io.verify(spiedService).findEdgeBetween(eq(aVertex), eq(bVertex), eq(TEST_MESH_NAME));
+		io.verify(graph).addEdge(eq(null), eq(aVertex), eq(bVertex), eq(TEST_MESH_NAME));
 		io.verify(abEdge).setProperty(eq(TRANSITION_COST), eq(7));
 		
 		io.verify(((TitanGraph)graph)).commit();
@@ -223,16 +226,17 @@ public class DefaultRoadMeshServiceTest {
 		bVertices.add(bVertex);
 		when(graph.getVertices(eq(LOCATION_NAME), eq("B"))).thenReturn(bVertices);
 		
-		when(spiedService.findEdgeBetween(eq(aVertex), eq(bVertex))).thenReturn(new DummyEdge());
-		
 		DummyVertex cVertex = new DummyVertex();
 		cVertex.setProperty(LOCATION_NAME, "C");
 		when(graph.addVertex(eq(null))).thenReturn(cVertex);
 		
-		DummyEdge bcEdge = spy(new DummyEdge());
-		when(graph.addEdge(eq(null), eq(bVertex), eq(cVertex), eq("Test Mesh"))).thenReturn(bcEdge);
+		doReturn(new DummyEdge()).when(spiedService).findEdgeBetween(eq(aVertex), eq(bVertex), eq(TEST_MESH_NAME));
+		doReturn(null).when(spiedService).findEdgeBetween(eq(bVertex), eq(cVertex), eq(TEST_MESH_NAME));
 		
-		RoadMesh mesh = new RoadMesh("Test Mesh");
+		DummyEdge bcEdge = spy(new DummyEdge());
+		when(graph.addEdge(eq(null), eq(bVertex), eq(cVertex), eq(TEST_MESH_NAME))).thenReturn(bcEdge);
+		
+		RoadMesh mesh = new RoadMesh(TEST_MESH_NAME);
 		mesh.addEntry("A", "B", 7);
 		mesh.addEntry("B", "C", 2);
 		
@@ -240,15 +244,15 @@ public class DefaultRoadMeshServiceTest {
 		
 		InOrder io = inOrder(graph, spiedService, bcEdge);
 		io.verify(spiedService).updateMesh(eq(mesh));
-		io.verify(spiedService).hasEdges(eq("Test Mesh"));
+		io.verify(spiedService).hasEdges(eq(TEST_MESH_NAME));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("A"));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
-		io.verify(spiedService).findEdgeBetween(aVertex, bVertex);
+		io.verify(spiedService).findEdgeBetween(aVertex, bVertex, TEST_MESH_NAME);
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("B"));
 		io.verify(graph).getVertices(eq(LOCATION_NAME), eq("C"));
 		io.verify(graph).addVertex(eq(null));
-		io.verify(spiedService).findEdgeBetween(bVertex, cVertex);
-		io.verify(graph).addEdge(eq(null), eq(bVertex), eq(cVertex), eq("Test Mesh"));
+		io.verify(spiedService).findEdgeBetween(bVertex, cVertex, TEST_MESH_NAME);
+		io.verify(graph).addEdge(eq(null), eq(bVertex), eq(cVertex), eq(TEST_MESH_NAME));
 		io.verify(bcEdge).setProperty(eq(TRANSITION_COST), eq(2));
 		
 		io.verify(((TitanGraph)graph)).commit();
