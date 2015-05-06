@@ -1,5 +1,7 @@
 package br.com.lptrias.twm.web.controller;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +24,18 @@ public class RouteController {
 								   @RequestParam(value="d", required=true) String destination,
 								   @RequestParam(value="fe", required=true) float fuelEficiency,
 								   @RequestParam(value="fc", required=true) float fuelCost,
-								   @PathVariable String meshName){
+								   @PathVariable String meshName,
+								   HttpServletResponse response){
 		
 		Route r = routeService.findCheapestRoute(origin, destination, meshName);
 		
+		if( r != null ){
+			response.setStatus(404);
+			
+			return null;
+		}
+		
 		float finalCost = r.getCost() * fuelCost / fuelEficiency;
-				
 		r.setCost(finalCost);
 		
 		return r;

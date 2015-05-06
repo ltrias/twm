@@ -37,9 +37,9 @@ public class DefaultRouteService implements RouteService {
 
 	private Route buildRouteFrom(String meshName, DijkstraPath path) {
 		Route result = null;
-		List<Vertex> steps = path.getSteps();
 		
-		if( !steps.isEmpty() ){
+		if( path != null && !path.getSteps().isEmpty() ){
+			List<Vertex> steps = path.getSteps();
 			result = new Route();
 			
 			result.setCost(path.getCost());

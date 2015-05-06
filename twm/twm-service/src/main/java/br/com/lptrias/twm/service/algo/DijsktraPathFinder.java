@@ -23,16 +23,18 @@ public class DijsktraPathFinder implements PathFinder{
 	
 	@Override
 	public DijkstraPath findPathBetween(Vertex origin, Vertex destination) {
-		
-		DijkstraPath result = new DijkstraPath();
-		
 		computePaths(origin);
 
-		result.setCost((Integer)destination.getProperty(MIN_DIST));
+		if( destination.getProperty("prev") == null ){
+			return null;
+		}
+		
+		DijkstraPath result = new DijkstraPath();
 		
 		for (Vertex vertex = destination; vertex != null; vertex = vertex.getProperty("prev")){
 			result.steps.add(vertex);
 		}
+		result.setCost((Integer)destination.getProperty(MIN_DIST));
 		
 		Collections.reverse(result.steps);
 		
