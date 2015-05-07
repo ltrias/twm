@@ -111,8 +111,18 @@ lucas@lucas-VirtualBox /tmp $ rm -rf ~/titan-0.5.4-hadoop2/db*
 5. Start TWM
 6. Feed TWM again
 
-
-
 ### Linux paths and TWM hosts
+TWM has been developed on a single linux station. On that way all paths are folowwing linux structures(like log on /tmp). In the same way all hosts used inside TWM point to localhost.
+
+No operational system or Titan DB(including indexers and storages) tunning has been made as it depends heavily on machine sizing and network topology. As any default probably the current TWM performance is not the best possible.
+
 ### Memory Footprint
+As many (capable of being) heavy systems will run on the same machine maybe it's useful to limit application memory with:
+
+```
+lucas@lucas-VirtualBox ~/git/twm/twm/twm-web $ export MAVEN_OPTS=-Xmx50M; mvn jetty:run
+```
+50MB has been enough to run on not so big meshes 
+
+
 ### Why not [Neo4j](http://neo4j.com/)
