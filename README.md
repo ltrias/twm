@@ -122,7 +122,7 @@ As many (capable of being) heavy systems will run on the same machine maybe it's
 ```
 lucas@lucas-VirtualBox ~/git/twm/twm/twm-web $ export MAVEN_OPTS=-Xmx50M; mvn jetty:run
 ```
-50MB has been enough to run on not so big meshes 
+50MB has been enough to run TWM with not so big meshes 
 
 
 ### Why not [Neo4j](http://neo4j.com/)
