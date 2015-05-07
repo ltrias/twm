@@ -34,6 +34,15 @@ Run rexster-console.sh to connect.
 It will start also Rexter Graph Server Console on http://localhost:8182/
 
 ###Starting TWM
+After pulling the project source code you can compile and run it as follows:
+
+```
+lucas@lucas-VirtualBox ~/git/twm/twm $ mvn clean install
+...
+lucas@lucas-VirtualBox ~/git/twm/twm $ cd twm-web/
+lucas@lucas-VirtualBox ~/git/twm/twm/twm-web $ mvn jetty:run
+```
+It will start the webapp and log to /tmp/twm-web.log
 
 ## How to use
 ## Remarks
