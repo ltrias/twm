@@ -129,6 +129,6 @@ lucas@lucas-VirtualBox ~/git/twm/twm/twm-web $ export MAVEN_OPTS=-Xmx50M; mvn je
 
 Neo4j is one of the most used graph dbs and, as Titan DB, can be performatic, transactional and has even a implementation o Dijkstra algorithm that is more tested and probably more performatic than TWM's one. On the other hand some features of Neo4J must be considered in order to choose a graph storage layer. Among others it's important to notice that:
 
-* Neo4J community edition is supposed to run on a single machine, so it's hard to grow
+* Neo4J community edition is supposed to run on a single machine, so it's hard to grow and horizontal scaling is impossible
 * Some features work only on embbeded graphs, so it's hard to have availability
 * Neo4J can be deployed in cluster for HA using master-slave replications, but it is paid
