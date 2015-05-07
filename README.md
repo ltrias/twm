@@ -65,7 +65,26 @@ B E 50
 D E 30
 ```
 
+To update the cost of transitions you can issue the same curl as above, but using PUT instead of POST. Only costs can be updated so far as a vertex may be part of more than onde road mesh.
+
 ###Querying Paths
+
+To query for the cheapest path you must GET the system as follows:
+```
+lucas@lucas-VirtualBox ~ $ curl -i "http://localhost:8080/twm/route/test_mesh/?o=A&d=D&fe=10&fc=2.5"
+```
+
+This will ask for the cheapest route between **D** and **A** on the road mesh **test_mesh** and its total cost. The parameters mean:
+
+*o: name of the origin
+*d: name of the destination
+*fe: fuel efficiency (in km/l)
+*fc: fuel cost (in money/l)
+
+The service will return a JSON like 
+
+```
+```
 
 ## Remarks
 ### Index limitations
