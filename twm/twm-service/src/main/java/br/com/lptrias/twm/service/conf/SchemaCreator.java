@@ -26,26 +26,21 @@ public class SchemaCreator implements InitializingBean{
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		LOGGER.debug("Verifying DB schema existence");
+		LOGGER.info("Verifying DB schema existence");
 		
 		TitanGraph tg = (TitanGraph) graph;
 		TitanManagement m = tg.getManagementSystem();
 		
 		PropertyKey name = null;
 		if( !m.containsPropertyKey(LOCATION_NAME) ){
-			LOGGER.debug("Creating property key " + LOCATION_NAME);
+			LOGGER.info("Creating property key " + LOCATION_NAME);
 			name = m.makePropertyKey(LOCATION_NAME).dataType(String.class).make();
 			TitanGraphIndex namei = m.buildIndex(LOCATION_NAME,Vertex.class).addKey(name).unique().buildCompositeIndex();
 			m.setConsistency(namei, ConsistencyModifier.LOCK);
 		}
 		
-//		if( !m.containsPropertyKey(TRANSITION_COST)) {
-//			PropertyKey distance = m.makePropertyKey(TRANSITION_COST).dataType(Integer.class).make();
-//			TitanGraphIndex distancei = m.buildIndex(TRANSITION_COST, Edge.class).addKey(distance).buildMixedIndex("search");
-//		}
-		
 		m.commit();	
-		LOGGER.debug("done");
+		LOGGER.info("done");
 	}
 	
 	
