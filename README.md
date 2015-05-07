@@ -76,14 +76,23 @@ lucas@lucas-VirtualBox ~ $ curl -i "http://localhost:8080/twm/route/test_mesh/?o
 
 This will ask for the cheapest route between **D** and **A** on the road mesh **test_mesh** and its total cost. The parameters mean:
 
-*o: name of the origin
-*d: name of the destination
-*fe: fuel efficiency (in km/l)
-*fc: fuel cost (in money/l)
+* o: name of the origin
+* d: name of the destination
+* fe: fuel efficiency (in km/l)
+* fc: fuel cost (in money/l)
 
-The service will return a JSON like 
+The service will return an unformatted JSON like 
 
 ```
+{
+   "steps" : [
+      "A",
+      "B",
+      "D"
+   ],
+   "cost" : 6.25,
+   "meshName" : "test_mesh"
+}
 ```
 
 ## Remarks
