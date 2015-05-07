@@ -2,8 +2,7 @@ package br.com.lptrias.twm.service.conf;
 
 import static br.com.lptrias.twm.service.conf.GraphDataProperties.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +18,7 @@ import com.tinkerpop.blueprints.Vertex;
 
 @Component
 public class SchemaCreator implements InitializingBean{
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = Logger.getLogger(SchemaCreator.class);
 	
 	@Autowired
 	@Qualifier("graph")
@@ -27,13 +26,14 @@ public class SchemaCreator implements InitializingBean{
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		LOGGER.debug("Creating DB schema");
+		LOGGER.debug("Verifying DB schema existence");
 		
 		TitanGraph tg = (TitanGraph) graph;
 		TitanManagement m = tg.getManagementSystem();
 		
 		PropertyKey name = null;
 		if( !m.containsPropertyKey(LOCATION_NAME) ){
+			LOGGER.debug("Creating property key " + LOCATION_NAME);
 			name = m.makePropertyKey(LOCATION_NAME).dataType(String.class).make();
 			TitanGraphIndex namei = m.buildIndex(LOCATION_NAME,Vertex.class).addKey(name).unique().buildCompositeIndex();
 			m.setConsistency(namei, ConsistencyModifier.LOCK);
@@ -45,6 +45,7 @@ public class SchemaCreator implements InitializingBean{
 //		}
 		
 		m.commit();	
+		LOGGER.debug("done");
 	}
 	
 	

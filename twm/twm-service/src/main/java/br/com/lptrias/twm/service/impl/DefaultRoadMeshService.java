@@ -2,10 +2,7 @@ package br.com.lptrias.twm.service.impl;
 
 import static br.com.lptrias.twm.service.conf.GraphDataProperties.*;
 
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +23,7 @@ import com.tinkerpop.gremlin.java.GremlinPipeline;
  */
 @Service
 public class DefaultRoadMeshService implements RoadMeshService {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = Logger.getLogger(DefaultRoadMeshService.class);
 	
 	private TitanGraph graph;
 
@@ -37,7 +34,6 @@ public class DefaultRoadMeshService implements RoadMeshService {
 
 	@Override
 	public void saveMesh(RoadMesh mesh) throws GraphModificationException {
-		LOGGER.debug("saveMesh called with: " + mesh);
 		try{
 			if( !validSave(mesh) ){
 				return;
@@ -47,8 +43,11 @@ public class DefaultRoadMeshService implements RoadMeshService {
 				Vertex o = addVertexIfNecessary(t.getOrigin());
 				Vertex d = addVertexIfNecessary(t.getDestination());
 				
+				int cost = mesh.getCost(t.getOrigin(), t.getDestination());
+				
+				LOGGER.debug("Adding edge with " + TRANSITION_COST + " = " + cost);
 				Edge edge = graph.addEdge(null, o, d, mesh.getName());
-				edge.setProperty(TRANSITION_COST, mesh.getCost(t.getOrigin(), t.getDestination()));
+				edge.setProperty(TRANSITION_COST, cost);
 			}
 			
 			graph.commit();
@@ -58,17 +57,18 @@ public class DefaultRoadMeshService implements RoadMeshService {
 			throw new GraphModificationException(e);
 		}
 		
+		LOGGER.debug("Mesh: " + mesh + " saved");
 	}
 	
 	@Override
 	public void updateMesh(RoadMesh mesh) throws GraphModificationException {
-		LOGGER.debug("updateMesh called with: " + mesh);
 		try{
 			if( !validUpdate(mesh) ){
 				return;
 			}
 			
 			for (EntryKey t : mesh.getTransitions()) {
+				LOGGER.debug("Checking vertices existence");
 				Vertex o = addVertexIfNecessary(t.getOrigin());
 				Vertex d = addVertexIfNecessary(t.getDestination());
 				
@@ -78,7 +78,10 @@ public class DefaultRoadMeshService implements RoadMeshService {
 					e = graph.addEdge(null, o, d, mesh.getName());
 				}
 				
-				e.setProperty(TRANSITION_COST, mesh.getCost(t.getOrigin(), t.getDestination()));
+				
+				int cost = mesh.getCost(t.getOrigin(), t.getDestination());
+				LOGGER.debug("Setting " + TRANSITION_COST + " = " + cost + " to edge " + e);
+				e.setProperty(TRANSITION_COST, cost);
 			}
 			
 			graph.commit();
@@ -88,6 +91,7 @@ public class DefaultRoadMeshService implements RoadMeshService {
 			throw new GraphModificationException(e);
 		}
 		
+		LOGGER.debug("Mesh: " + mesh + " updated");
 	}
 	
 	Edge findEdgeBetween(Vertex a, Vertex b, String meshName){
@@ -121,6 +125,8 @@ public class DefaultRoadMeshService implements RoadMeshService {
 		
 		Iterable<Vertex> vertices = graph.getVertices(LOCATION_NAME, locationName);
 		if( vertices == null || !vertices.iterator().hasNext() ){
+			LOGGER.debug("Adding vertex with " + LOCATION_NAME + " = " + locationName);
+			
 			v = graph.addVertex(null);
 			v.setProperty(LOCATION_NAME, locationName);
 		} else {
