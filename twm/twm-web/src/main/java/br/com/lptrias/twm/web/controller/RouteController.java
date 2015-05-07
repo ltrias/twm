@@ -29,7 +29,7 @@ public class RouteController {
 		
 		Route r = routeService.findCheapestRoute(origin, destination, meshName);
 		
-		if( r != null ){
+		if( r == null ){
 			response.setStatus(404);
 			
 			return null;
