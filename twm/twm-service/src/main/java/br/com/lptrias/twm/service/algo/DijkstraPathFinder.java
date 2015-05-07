@@ -12,12 +12,12 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 
-public class DijsktraPathFinder implements PathFinder{
+public class DijkstraPathFinder implements PathFinder{
 	
 	private static final String MIN_DIST = "minDist";
 	private String meshName;
 	
-	public DijsktraPathFinder(String meshName) {
+	public DijkstraPathFinder(String meshName) {
 		this.meshName = meshName;
 	}
 	
