@@ -97,6 +97,22 @@ The service will return an unformatted JSON like
 
 ## Remarks
 ### Index limitations
+Titan DB indexes are extemely sensitive and may lead to situations like removing an edge label but still being able to find it. This is not a problem in common TWM usage, but some unexpected behaviors may be found on debugging sessions or after manual changes on the graph. In general Titan DB is not capable of deindexing types so far.
+
+Vertices and Edges may be removed using gremlin language, but the indexes will remain intact so, in case of unexpected behavior, I(and the Titan DB creators) suggest:
+
+1. Stop TWM
+2. Stop Titan DB
+3. Delete data directory inside Titan DB folder
+```
+lucas@lucas-VirtualBox /tmp $ rm -rf ~/titan-0.5.4-hadoop2/db*
+```
+4. Start Titan Db
+5. Start TWM
+6. Feed TWM again
+
+
+
 ### Linux paths and TWM hosts
 ### Memory Footprint
 ### Why not [Neo4j](http://neo4j.com/)
