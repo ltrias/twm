@@ -15,4 +15,14 @@ public class Path {
 	public List<Vertex> getSteps() {
 		return steps;
 	}
+	
+	String getShortPath(String propertyName){
+		StringBuilder sb = new StringBuilder();
+		
+		for (Vertex v : steps) {
+			sb.append(v.getProperty(propertyName));
+		}
+		
+		return sb.toString();
+	}
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import br.com.lptrias.twm.model.Route;
 import br.com.lptrias.twm.service.RouteService;
 import br.com.lptrias.twm.service.algo.DijkstraPath;
-import br.com.lptrias.twm.service.algo.DijsktraPathFinder;
+import br.com.lptrias.twm.service.algo.DijkstraPathFinder;
 import br.com.lptrias.twm.service.conf.GraphDataProperties;
 
 import com.thinkaurelius.titan.core.TitanGraph;
@@ -27,7 +27,7 @@ public class DefaultRouteService implements RouteService {
 			Vertex destinationVertex = findVertexForLocation(destination);
 			
 			
-			DijkstraPath path = new DijsktraPathFinder(meshName).findPathBetween(originVertex, destinationVertex);
+			DijkstraPath path = new DijkstraPathFinder(meshName).findPathBetween(originVertex, destinationVertex);
 			
 			return buildRouteFrom(meshName, path);
 		}finally{

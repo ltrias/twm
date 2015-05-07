@@ -38,7 +38,6 @@ public class MeshController {
 	
 	private void handleRequest(String meshName, String meshData, HttpServletResponse response, RequestMethod method) {
 		LOGGER.info("Receiving mesh " + meshName);
-		LOGGER.debug("Data: " + meshData);
 		RoadMesh mesh = new RoadMesh(meshName);
 		
 		try{
@@ -60,6 +59,7 @@ public class MeshController {
 				roadMeshService.updateMesh(mesh);
 			}
 		}catch(GraphModificationException e){
+			LOGGER.error("Problem saving mesh:", e);
 			try {
 				response.getOutputStream().write(e.getMessage().getBytes());
 			} catch (IOException e1) {

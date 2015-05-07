@@ -25,7 +25,7 @@ public class DijkstraPathFinder implements PathFinder{
 	public DijkstraPath findPathBetween(Vertex origin, Vertex destination) {
 		computePaths(origin);
 
-		if( destination.getProperty("prev") == null ){
+		if( !destination.equals(origin) && destination.getProperty("prev") == null ){
 			return null;
 		}
 		

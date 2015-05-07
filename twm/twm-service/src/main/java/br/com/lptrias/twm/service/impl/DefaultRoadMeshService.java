@@ -1,6 +1,7 @@
 package br.com.lptrias.twm.service.impl;
 
 import static br.com.lptrias.twm.service.conf.GraphDataProperties.*;
+import static br.com.lptrias.twm.service.util.GraphUtil.*;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,8 @@ public class DefaultRoadMeshService implements RoadMeshService {
 			}
 			
 			for (EntryKey t : mesh.getTransitions()) {
-				Vertex o = addVertexIfNecessary(t.getOrigin());
-				Vertex d = addVertexIfNecessary(t.getDestination());
+				Vertex o = addVertexIfNecessary(graph, t.getOrigin());
+				Vertex d = addVertexIfNecessary(graph, t.getDestination());
 				
 				int cost = mesh.getCost(t.getOrigin(), t.getDestination());
 				
@@ -69,8 +70,8 @@ public class DefaultRoadMeshService implements RoadMeshService {
 			
 			for (EntryKey t : mesh.getTransitions()) {
 				LOGGER.debug("Checking vertices existence");
-				Vertex o = addVertexIfNecessary(t.getOrigin());
-				Vertex d = addVertexIfNecessary(t.getDestination());
+				Vertex o = addVertexIfNecessary(graph, t.getOrigin());
+				Vertex d = addVertexIfNecessary(graph, t.getDestination());
 				
 				Edge e = findEdgeBetween(o, d, mesh.getName());
 				
@@ -118,22 +119,6 @@ public class DefaultRoadMeshService implements RoadMeshService {
 		Iterable<Edge> edges = graph.getEdges(LABEL, name);
 		
 		return edges != null && edges.iterator().hasNext();
-	}
-
-	private Vertex addVertexIfNecessary(String locationName) {
-		Vertex v = null;
-		
-		Iterable<Vertex> vertices = graph.getVertices(LOCATION_NAME, locationName);
-		if( vertices == null || !vertices.iterator().hasNext() ){
-			LOGGER.debug("Adding vertex with " + LOCATION_NAME + " = " + locationName);
-			
-			v = graph.addVertex(null);
-			v.setProperty(LOCATION_NAME, locationName);
-		} else {
-			v = vertices.iterator().next();
-		}
-		
-		return v;
 	}
 
 	private boolean validSave(RoadMesh mesh) {
