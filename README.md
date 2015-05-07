@@ -6,7 +6,7 @@ TWM is a simple set of web services to find cheapest route on road meshes. These
 
 TWM is meant to be robust, highly available and scalable from its start. To meet these requirements a set of good tools must be chosen. Graphs are the tool of choice for path finding and [Tinkerpop Blueprints](https://github.com/tinkerpop/blueprints/wiki) provides a specifications of a rich framework for graph operations.
 
-[Titan](http://thinkaurelius.github.io/titan/) is a distributed graph database that can operate over many storage backends(such as Cassandra, HBase and BerkeleyDB), many indexing backends(such as Solr, Lucene and ElasticSearch) and integrates with Hadoop for offline analytics and with the Tinkerpop Stack. All those features turn Titan into the best graph database to achieve robustness, availability and scalability and the storage layer of TWM.
+[Titan](http://thinkaurelius.github.io/titan/) is an ACID distributed graph database that can operate over many storage backends(such as Cassandra, HBase and BerkeleyDB), many indexing backends(such as Solr, Lucene and ElasticSearch) and integrates with Hadoop for offline analytics and with the Tinkerpop Stack. All those features turn Titan into the best graph database to achieve robustness, availability and scalability and the storage layer of TWM.
 
 TWM itself is a web application that can be installed concurrently on as much servers as needed.
 
@@ -44,7 +44,29 @@ lucas@lucas-VirtualBox ~/git/twm/twm/twm-web $ mvn jetty:run
 ```
 It will start the webapp and log to /tmp/twm-web.log
 
-## How to use
+## How to use TWM
+TWM usage cycle has two main steps, uploading data and querying paths.
+
+###Uploading data
+
+You can POST specially formatted data to TWM with curl as follows:
+
+```
+curl -i -XPOST  -H"Content-Type:text/plain" --data-binary @mesh_data http://localhost:8080/twm/mesh/test_mesh/
+```
+On this example the mesh data is stored in the file **./mesh_data** and a road mesh called **test_mesh** as the last portion of URI states. The data file must be composed of individual lines describing a transition between vertices and its cost each. A sample file is show below
+
+```
+A B 10
+B D 15
+A C 20
+C D 30
+B E 50
+D E 30
+```
+
+###Querying Paths
+
 ## Remarks
 ### Index limitations
 ### Linux paths and TWM hosts
