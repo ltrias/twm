@@ -5,8 +5,7 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +21,7 @@ import br.com.lptrias.twm.service.exception.GraphModificationException;
 @RestController
 @RequestMapping("/twm/mesh/{meshName}")
 public class MeshController {
-	
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = Logger.getLogger(MeshController.class);
 	
 	@Autowired
 	private RoadMeshService roadMeshService;

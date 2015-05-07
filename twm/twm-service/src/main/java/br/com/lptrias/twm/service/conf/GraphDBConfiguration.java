@@ -6,8 +6,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -18,8 +17,7 @@ import com.thinkaurelius.titan.core.TitanGraph;
 
 @Configuration
 public class GraphDBConfiguration {
-	
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(GraphDBConfiguration.class);
 	
 	@Bean(name="graph", destroyMethod="shutdown")
 	public TitanGraph configureGraph(){
@@ -40,6 +38,7 @@ public class GraphDBConfiguration {
 			conf.setProperty((String)e.getKey(), e.getValue());
 		}
 		
+		LOGGER.debug("Graph bean created with configuration: " + prop);
 		return TitanFactory.open(conf);
 	}
 }
