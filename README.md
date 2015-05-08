@@ -4,7 +4,7 @@ TWM is a simple set of web services to find cheapest route on road meshes. These
 
 ## System Architecture
 
-TWM is meant to be robust, highly available and scalable from its start. To meet these requirements a set of good tools must be chosen. Graphs are the tool of choice for path finding and [Tinkerpop Blueprints](https://github.com/tinkerpop/blueprints/wiki) provides a specifications of a rich framework for graph operations.
+TWM is meant to be robust, highly available and scalable from its start. To meet these requira sements a set of good tools must be chosen. Graphs are the tool of choice for path finding and [Tinkerpop Blueprints](https://github.com/tinkerpop/blueprints/wiki) provides specification of a rich framework for graph operations.
 
 [Titan](http://thinkaurelius.github.io/titan/) is an ACID distributed graph database that can operate over many storage backends(such as Cassandra, HBase and BerkeleyDB), many indexing backends(such as Solr, Lucene and ElasticSearch) and integrates with Hadoop for offline analytics and with the Tinkerpop Stack. All those features turn Titan into the best graph database to achieve robustness, availability and scalability and the storage layer of TWM.
 
@@ -17,7 +17,7 @@ To run TWM you must first install Titan Graph DB, after that you can use maven t
 * maven 3
 
 ###Installing Titan DB
-Although storage and indexing backends could be installed on its own clusters, and it would be good for a production scenario, Titan DB provides a [localhost working package](http://s3.thinkaurelius.com/downloads/titan/titan-0.5.4-hadoop2.zip) with pre configured Cassandra and ElasticSearch that is enough to prove TWM's concept.
+Although storage and indexing backends may be installed on its own clusters, and it would be good for a production scenario, Titan DB provides a [localhost working package](http://s3.thinkaurelius.com/downloads/titan/titan-0.5.4-hadoop2.zip) with pre configured Cassandra and ElasticSearch that is enough to prove TWM's concept.
 
 After expanding the zip file you can start Titan DB with the titan script as follows
 
@@ -31,7 +31,7 @@ Forking Titan + Rexster...
 Connecting to Titan + Rexster (127.0.0.1:8184).............. OK (connected to 127.0.0.1:8184).
 Run rexster-console.sh to connect.
 ```
-It will start also Rexter Graph Server Console on http://localhost:8182/
+It will start also Rexter Graph Server Console on [http://localhost:8182/]
 
 ###Starting TWM
 After pulling the project source code you can compile and run it as follows:
@@ -54,7 +54,7 @@ You can POST specially formatted data to TWM with curl as follows:
 ```
 curl -i -XPOST  -H"Content-Type:text/plain" --data-binary @mesh_data http://localhost:8080/twm/mesh/test_mesh/
 ```
-On this example the mesh data is stored in the file **./mesh_data** and a road mesh called **test_mesh** as the last portion of URI states. The data file must be composed of individual lines describing a transition between vertices and its cost each. A sample file is show below
+On this example the mesh data is stored in the file **./mesh_data** and a road mesh called **test_mesh** as the last portion of URI states will be stored on DB. The data file must be composed of individual lines describing a transition between vertices and its cost each. A sample file is show below
 
 ```
 A B 10
@@ -97,7 +97,7 @@ The service will return an unformatted JSON like
 
 ## Remarks
 ### Index limitations
-Titan DB indexes are extemely sensitive and may lead to situations like removing an edge label but still being able to find it. This is not a problem in common TWM usage, but some unexpected behaviors may be found on debugging sessions or after manual changes on the graph. In general Titan DB is not capable of deindexing types so far.
+Titan DB indexes are extremely sensitive and may lead to situations like removing an edge label but still being able to find it. This is not a problem in common TWM usage, but some unexpected behaviors may be found on debugging sessions or after manual changes on the graph. In general Titan DB is not capable of deindexing types so far.
 
 Vertices and Edges may be removed using gremlin language, but the indexes will remain intact so, in case of unexpected behavior, I(and the Titan DB creators) suggest:
 
@@ -114,7 +114,7 @@ lucas@lucas-VirtualBox /tmp $ rm -rf ~/titan-0.5.4-hadoop2/db*
 ### Linux paths and TWM hosts
 TWM has been developed on a single linux station. On that way all paths are folowwing linux structures(like log on /tmp). In the same way all hosts used inside TWM point to localhost.
 
-No operational system or Titan DB(including indexers and storages) tunning has been made as it depends heavily on machine sizing and network topology. As any default probably the current TWM performance is not the best possible.
+No operational system, Titan DB(including indexers and storages) or container tunning has been made as it depends heavily on machine sizing and network topology. As any default probably the current TWM performance is not the best possible.
 
 ### Memory Footprint
 As many (capable of being) heavy systems will run on the same machine maybe it's useful to limit application memory with:
